@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using backend.Data;
+using backend.Services.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +8,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Add authorization services
+builder.Services.AddScoped<IPermissionService, PermissionService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
 
 // Add health checks
 builder.Services.AddHealthChecks()
@@ -17,6 +22,14 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+// Seed database
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    var initializer = new DbInitializer(dbContext);
+    await initializer.SeedAsync();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
