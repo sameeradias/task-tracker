@@ -12,7 +12,7 @@ using backend.Data;
 namespace backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260703174025_InitialPermissions")]
+    [Migration("20260703174100_InitialPermissions")]
     partial class InitialPermissions
     {
         /// <inheritdoc />
@@ -39,11 +39,6 @@ namespace backend.Migrations
                     b.Property<int?>("CreatedBy")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasMaxLength(21)
-                        .HasColumnType("character varying(21)");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
@@ -61,9 +56,7 @@ namespace backend.Migrations
 
                     b.ToTable("BaseEntity");
 
-                    b.HasDiscriminator<string>("Discriminator").HasValue("BaseEntity");
-
-                    b.UseTphMappingStrategy();
+                    b.UseTptMappingStrategy();
                 });
 
             modelBuilder.Entity("backend.Models.Permission", b =>
@@ -87,7 +80,7 @@ namespace backend.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.HasDiscriminator().HasValue("Permission");
+                    b.ToTable("Permissions", (string)null);
                 });
 
             modelBuilder.Entity("backend.Models.Role", b =>
@@ -109,16 +102,7 @@ namespace backend.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("BaseEntity", t =>
-                        {
-                            t.Property("Description")
-                                .HasColumnName("Role_Description");
-
-                            t.Property("Name")
-                                .HasColumnName("Role_Name");
-                        });
-
-                    b.HasDiscriminator().HasValue("Role");
+                    b.ToTable("Roles", (string)null);
                 });
 
             modelBuilder.Entity("backend.Models.RolePermission", b =>
@@ -136,7 +120,7 @@ namespace backend.Migrations
                     b.HasIndex("RoleId", "PermissionId")
                         .IsUnique();
 
-                    b.HasDiscriminator().HasValue("RolePermission");
+                    b.ToTable("RolePermissions", (string)null);
                 });
 
             modelBuilder.Entity("backend.Models.User", b =>
@@ -168,13 +152,7 @@ namespace backend.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("BaseEntity", t =>
-                        {
-                            t.Property("IsActive")
-                                .HasColumnName("User_IsActive");
-                        });
-
-                    b.HasDiscriminator().HasValue("User");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("backend.Models.UserRole", b =>
@@ -192,13 +170,7 @@ namespace backend.Migrations
                     b.HasIndex("UserId", "RoleId")
                         .IsUnique();
 
-                    b.ToTable("BaseEntity", t =>
-                        {
-                            t.Property("RoleId")
-                                .HasColumnName("UserRole_RoleId");
-                        });
-
-                    b.HasDiscriminator().HasValue("UserRole");
+                    b.ToTable("UserRoles", (string)null);
                 });
 
             modelBuilder.Entity("backend.Models.BaseEntity", b =>
@@ -218,8 +190,32 @@ namespace backend.Migrations
                     b.Navigation("LastUpdatedByUser");
                 });
 
+            modelBuilder.Entity("backend.Models.Permission", b =>
+                {
+                    b.HasOne("backend.Models.BaseEntity", null)
+                        .WithOne()
+                        .HasForeignKey("backend.Models.Permission", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("backend.Models.Role", b =>
+                {
+                    b.HasOne("backend.Models.BaseEntity", null)
+                        .WithOne()
+                        .HasForeignKey("backend.Models.Role", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("backend.Models.RolePermission", b =>
                 {
+                    b.HasOne("backend.Models.BaseEntity", null)
+                        .WithOne()
+                        .HasForeignKey("backend.Models.RolePermission", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("backend.Models.Permission", "Permission")
                         .WithMany("RolePermissions")
                         .HasForeignKey("PermissionId")
@@ -237,8 +233,23 @@ namespace backend.Migrations
                     b.Navigation("Role");
                 });
 
+            modelBuilder.Entity("backend.Models.User", b =>
+                {
+                    b.HasOne("backend.Models.BaseEntity", null)
+                        .WithOne()
+                        .HasForeignKey("backend.Models.User", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("backend.Models.UserRole", b =>
                 {
+                    b.HasOne("backend.Models.BaseEntity", null)
+                        .WithOne()
+                        .HasForeignKey("backend.Models.UserRole", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("backend.Models.Role", "Role")
                         .WithMany("UserRoles")
                         .HasForeignKey("RoleId")

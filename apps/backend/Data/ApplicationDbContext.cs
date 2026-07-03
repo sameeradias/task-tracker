@@ -40,18 +40,21 @@ public class ApplicationDbContext : DbContext
         // Configure Permission entity
         modelBuilder.Entity<Permission>(entity =>
         {
+            entity.ToTable("Permissions");
             entity.HasIndex(e => e.Name).IsUnique();
         });
 
         // Configure Role entity
         modelBuilder.Entity<Role>(entity =>
         {
+            entity.ToTable("Roles");
             entity.HasIndex(e => e.Name).IsUnique();
         });
 
         // Configure User entity
         modelBuilder.Entity<User>(entity =>
         {
+            entity.ToTable("Users");
             entity.HasIndex(e => e.Email).IsUnique();
             
             // Configure self-referencing relationships for audit fields
@@ -69,6 +72,7 @@ public class ApplicationDbContext : DbContext
         // Configure RolePermission entity
         modelBuilder.Entity<RolePermission>(entity =>
         {
+            entity.ToTable("RolePermissions");
             entity.HasIndex(e => new { e.RoleId, e.PermissionId }).IsUnique();
 
             entity.HasOne(e => e.Role)
@@ -85,6 +89,7 @@ public class ApplicationDbContext : DbContext
         // Configure UserRole entity
         modelBuilder.Entity<UserRole>(entity =>
         {
+            entity.ToTable("UserRoles");
             entity.HasIndex(e => new { e.UserId, e.RoleId }).IsUnique();
 
             entity.HasOne(e => e.User)
