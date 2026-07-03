@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using backend.Models;
+using backend.Models.Enums;
 
 namespace backend.Data;
 
@@ -16,6 +17,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Permission> Permissions => Set<Permission>();
     public DbSet<Role> Roles => Set<Role>();
     public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
+    public DbSet<TaskItem> TaskItems => Set<TaskItem>();
     public DbSet<UserRole> UserRoles => Set<UserRole>();
     public DbSet<User> Users => Set<User>();
 
@@ -101,6 +103,20 @@ public class ApplicationDbContext : DbContext
                   .WithMany(r => r.UserRoles)
                   .HasForeignKey(e => e.RoleId)
                   .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // Configure TaskItem entity
+        modelBuilder.Entity<TaskItem>(entity =>
+        {
+            entity.ToTable("TaskItems");
+            entity.HasIndex(e => e.OwnerId);
+            entity.HasIndex(e => e.Status);
+            entity.HasIndex(e => new { e.OwnerId, e.Status });
+
+            entity.HasOne(e => e.Owner)
+                  .WithMany()
+                  .HasForeignKey(e => e.OwnerId)
+                  .OnDelete(DeleteBehavior.Restrict);
         });
 
         // Future entity configurations will be added here
