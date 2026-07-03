@@ -1,5 +1,6 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using backend.Services.Authorization;
+using backend.Services.PermissionService;
 using backend.DTOs;
 using backend.Attributes;
 
@@ -7,6 +8,7 @@ namespace backend.Controllers;
 
 [Route("api/permissions")]
 [ApiController]
+[Authorize]
 public class PermissionController : ControllerBase
 {
     private readonly IPermissionService _permissionService;

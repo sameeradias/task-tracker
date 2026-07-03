@@ -1,6 +1,6 @@
 using backend.Models;
 
-namespace backend.Services.Authorization;
+namespace backend.Services.PermissionService;
 
 public interface IPermissionService
 {

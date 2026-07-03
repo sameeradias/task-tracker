@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using backend.Data;
 using backend.Models;
 
-namespace backend.Services.Authorization;
+namespace backend.Services.RoleService;
 
 public class RoleService : IRoleService
 {

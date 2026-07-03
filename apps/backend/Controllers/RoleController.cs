@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using backend.Services.Authorization;
+using backend.Services.RoleService;
+using backend.Services.PermissionService;
 using backend.DTOs;
 using backend.Attributes;
 
@@ -7,6 +9,7 @@ namespace backend.Controllers;
 
 [Route("api/roles")]
 [ApiController]
+[Authorize]
 public class RoleController : ControllerBase
 {
     private readonly IRoleService _roleService;
