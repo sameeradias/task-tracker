@@ -107,7 +107,7 @@ export interface PermissionResponse {
 export interface DecodedToken {
   user_id: string;
   email: string;
-  user_role: string;
-  permissions: string;
+  user_role?: string;
+  permissions?: string;
   exp: number;
 }

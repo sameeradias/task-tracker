@@ -88,9 +88,11 @@ export default function RolesPage() {
   };
 
   // Group permissions by category
-  const permissionsByCategory = permissions.reduce((acc, p) => {
-    if (!acc[p.category]) acc[p.category] = [];
-    acc[p.category].push(p);
+  const permissionsByCategory = (permissions || []).reduce((acc, p) => {
+    if (!acc[p.category]) {
+      acc[p.category] = [];
+    }
+    acc[p.category]!.push(p);
     return acc;
   }, {} as Record<string, PermissionResponse[]>);
 
@@ -101,7 +103,7 @@ export default function RolesPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Roles</h1>
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-          <DialogTrigger asChild><Button><Plus className="mr-2 h-4 w-4" /> Create Role</Button></DialogTrigger>
+          <DialogTrigger><Button><Plus className="mr-2 h-4 w-4" /> Create Role</Button></DialogTrigger>
           <DialogContent>
             <DialogHeader><DialogTitle>Create Role</DialogTitle></DialogHeader>
             <form onSubmit={handleCreateRole} className="space-y-4">

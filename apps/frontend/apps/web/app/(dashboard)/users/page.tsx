@@ -88,7 +88,7 @@ export default function UsersPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Users</h1>
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-          <DialogTrigger asChild>
+          <DialogTrigger>
             <Button><Plus className="mr-2 h-4 w-4" /> Create User</Button>
           </DialogTrigger>
           <DialogContent>
@@ -103,7 +103,7 @@ export default function UsersPage() {
               <div className="space-y-2"><Label>Password</Label><Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} /></div>
               <div className="space-y-2">
                 <Label>Role</Label>
-                <Select value={selectedRoleId} onValueChange={setSelectedRoleId}>
+                <Select value={selectedRoleId} onValueChange={(value) => setSelectedRoleId(value || "")}>
                   <SelectTrigger><SelectValue placeholder="Select role" /></SelectTrigger>
                   <SelectContent>
                     {roles.map((role) => (<SelectItem key={role.id} value={String(role.id)}>{role.name}</SelectItem>))}
@@ -131,7 +131,7 @@ export default function UsersPage() {
               <TableCell className="font-medium">{user.firstName} {user.lastName}</TableCell>
               <TableCell>{user.email}</TableCell>
               <TableCell>
-                <Select value={roles.find(r => r.name === user.roleName)?.id?.toString() || ""} onValueChange={(v) => handleRoleChange(user.id, v)}>
+                <Select value={roles.find(r => r.name === user.roleName)?.id?.toString() || ""} onValueChange={(v) => handleRoleChange(user.id, v || "")}>
                   <SelectTrigger className="w-[130px] h-8"><SelectValue placeholder="No role" /></SelectTrigger>
                   <SelectContent>
                     {roles.map((role) => (<SelectItem key={role.id} value={String(role.id)}>{role.name}</SelectItem>))}

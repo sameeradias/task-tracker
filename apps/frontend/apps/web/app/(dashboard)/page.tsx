@@ -13,11 +13,11 @@ export default function DashboardPage() {
           <h1 className="text-2xl font-bold">Task Board</h1>
           <p className="text-muted-foreground text-sm">View and manage your tasks</p>
         </div>
-        <Button asChild>
-          <Link href="/dashboard/tasks/new">
+        <Link href="/dashboard/tasks/new">
+          <Button>
             <Plus className="mr-2 h-4 w-4" /> New Task
-          </Link>
-        </Button>
+          </Button>
+        </Link>
       </div>
       <TaskBoard />
     </div>

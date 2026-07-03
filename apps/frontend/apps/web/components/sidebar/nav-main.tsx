@@ -20,12 +20,12 @@ export function NavMain({ items, label }: { items: NavItem[]; label: string }) {
       <SidebarMenu>
         {items.map((item) => (
           <SidebarMenuItem key={item.title}>
-            <SidebarMenuButton asChild isActive={pathname === item.url}>
-              <Link href={item.url}>
+            <Link href={item.url}>
+              <SidebarMenuButton isActive={pathname === item.url}>
                 <item.icon className="size-4" />
                 <span>{item.title}</span>
-              </Link>
-            </SidebarMenuButton>
+              </SidebarMenuButton>
+            </Link>
           </SidebarMenuItem>
         ))}
       </SidebarMenu>

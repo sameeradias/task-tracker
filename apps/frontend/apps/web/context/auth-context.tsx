@@ -35,8 +35,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return {
       userId: parseInt(decoded.user_id),
       email: decoded.email,
-      firstName: decoded.email.split("@")[0],
-      role: decoded.user_role || "User",
+      firstName: decoded.email.split("@")[0] ?? "User",
+      role: decoded.user_role ?? "User",
       permissions: decoded.permissions ? decoded.permissions.split(",").map(p => p.trim()) : [],
     };
   }, []);

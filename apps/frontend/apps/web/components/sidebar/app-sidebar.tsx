@@ -25,8 +25,8 @@ export function AppSidebar() {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
-              <a href="/dashboard">
+            <a href="/dashboard">
+              <SidebarMenuButton size="lg">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                   <CheckSquare className="size-4" />
                 </div>
@@ -34,8 +34,8 @@ export function AppSidebar() {
                   <span className="truncate font-semibold">Task Tracker</span>
                   <span className="truncate text-xs text-muted-foreground">{user?.role || "User"}</span>
                 </div>
-              </a>
-            </SidebarMenuButton>
+              </SidebarMenuButton>
+            </a>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>

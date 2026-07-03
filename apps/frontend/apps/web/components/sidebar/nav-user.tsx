@@ -20,7 +20,7 @@ export function NavUser() {
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+          <DropdownMenuTrigger>
             <SidebarMenuButton size="lg">
               <Avatar className="h-8 w-8">
                 <AvatarFallback>{initials}</AvatarFallback>

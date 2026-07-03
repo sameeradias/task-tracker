@@ -31,9 +31,9 @@ export default function TaskDetailPage() {
         const data = await api.get<TaskResponse>(`/tasks/${taskId}`);
         setTask(data);
         setTitle(data.title);
-        setDescription(data.description || "");
-        setStatus(data.status);
-        setDueDate(data.dueDate ? data.dueDate.split("T")[0] : "");
+        setDescription(data.description ?? "");
+        setStatus(data.status || "Todo");
+        setDueDate(data.dueDate ? data.dueDate.split("T")[0] ?? "" : "");
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load task");
       } finally {
@@ -88,7 +88,7 @@ export default function TaskDetailPage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Status</Label>
-                <Select value={status} onValueChange={setStatus}>
+                <Select value={status} onValueChange={(value) => setStatus(value || "Todo")}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Todo">Todo</SelectItem>

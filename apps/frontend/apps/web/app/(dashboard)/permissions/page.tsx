@@ -31,12 +31,14 @@ export default function PermissionsPage() {
   const filtered = permissions.filter(p =>
     p.name.toLowerCase().includes(search.toLowerCase()) ||
     p.category.toLowerCase().includes(search.toLowerCase()) ||
-    (p.description || "").toLowerCase().includes(search.toLowerCase())
+    (p.description && p.description.toLowerCase().includes(search.toLowerCase()))
   );
 
   const grouped = filtered.reduce((acc, p) => {
-    if (!acc[p.category]) acc[p.category] = [];
-    acc[p.category].push(p);
+    if (!acc[p.category]) {
+      acc[p.category] = [];
+    }
+    acc[p.category]!.push(p);
     return acc;
   }, {} as Record<string, PermissionResponse[]>);
 
