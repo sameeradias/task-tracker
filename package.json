@@ -11,12 +11,12 @@
   ],
   "scripts": {
     "dev": "concurrently -n backend,frontend -c blue,green \"npm run dev:backend\" \"npm run dev:frontend\"",
-    "dev:backend": "dotnet watch run --project apps/backend/src/Api.Host",
+    "dev:backend": "dotnet watch run --project apps/backend",
     "dev:frontend": "npm run dev --workspace=apps/frontend",
     "build": "npm run build:backend && npm run build:frontend",
-    "build:backend": "dotnet build apps/backend/Api.sln -c Release",
+    "build:backend": "dotnet build apps/backend -c Release",
     "build:frontend": "npm run build --workspace=apps/frontend",
-    "start:backend": "dotnet run --project apps/backend/src/Api.Host -c Release",
+    "start:backend": "dotnet run --project apps/backend -c Release",
     "start:frontend": "npm run start --workspace=apps/frontend"
   },
   "devDependencies": {
