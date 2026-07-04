@@ -36,6 +36,12 @@ jobs:
       - name: Build backend
         run: dotnet build apps/backend --no-restore -c Release
 
+      - name: Restore test project
+        run: dotnet restore apps/backend.Tests
+
+      - name: Run backend tests
+        run: dotnet test apps/backend.Tests --no-restore --verbosity normal
+
       - name: Install frontend dependencies
         run: npm ci
 
