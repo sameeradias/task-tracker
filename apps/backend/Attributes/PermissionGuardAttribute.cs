@@ -39,8 +39,8 @@ public class PermissionGuardAttribute : ActionFilterAttribute
         // Get user's role from claims
         var userRole = user.Claims.FirstOrDefault(c => c.Type == "user_role")?.Value;
 
-        // Admin role bypasses all permission checks
-        if (string.Equals(userRole, "Admin", StringComparison.OrdinalIgnoreCase))
+        // Only Super Admin role bypasses all permission checks
+        if (string.Equals(userRole, "Super Admin", StringComparison.OrdinalIgnoreCase))
         {
             base.OnActionExecuting(context);
             return;

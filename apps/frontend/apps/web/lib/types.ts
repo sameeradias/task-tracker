@@ -106,8 +106,9 @@ export interface PermissionResponse {
 // JWT decoded token
 export interface DecodedToken {
   user_id: string;
-  email: string;
-  user_role?: string;
-  permissions?: string;
+  email: string | string[];
+  user_role: string;
+  permissions: string;
   exp: number;
+  [key: string]: unknown;
 }

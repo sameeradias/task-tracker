@@ -21,7 +21,7 @@ public class TaskService : ITaskService
             Title = title,
             Description = description,
             Status = status,
-            DueDate = dueDate,
+            DueDate = dueDate.HasValue ? DateTime.SpecifyKind(dueDate.Value, DateTimeKind.Utc) : null,
             OwnerId = ownerId,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
@@ -81,7 +81,7 @@ public class TaskService : ITaskService
         if (status.HasValue)
             taskItem.Status = status.Value;
         if (dueDate.HasValue)
-            taskItem.DueDate = dueDate.Value;
+            taskItem.DueDate = DateTime.SpecifyKind(dueDate.Value, DateTimeKind.Utc);
 
         taskItem.UpdatedAt = DateTime.UtcNow;
 

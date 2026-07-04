@@ -18,6 +18,8 @@ interface AuthContextType {
   user: AuthUser | null;
   isLoading: boolean;
   isAdmin: boolean;
+  isSuperAdmin: boolean;
+  hasPermission: (permission: string) => boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (firstName: string, lastName: string, email: string, password: string) => Promise<void>;
   logout: () => void;
@@ -32,12 +34,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const extractUser = useCallback((token: string): AuthUser | null => {
     const decoded = decodeToken(token);
     if (!decoded) return null;
+    
+    // Handle email claim which might be string or array
+    const email = Array.isArray(decoded.email) ? decoded.email[0] : (decoded.email ?? "");
+    const emailStr = typeof email === "string" ? email : String(email ?? "");
+    
     return {
       userId: parseInt(decoded.user_id),
-      email: decoded.email,
-      firstName: decoded.email.split("@")[0] ?? "User",
+      email: emailStr,
+      firstName: emailStr.includes("@") ? (emailStr.split("@")[0] || "User") : "User",
       role: decoded.user_role ?? "User",
-      permissions: decoded.permissions ? decoded.permissions.split(",").map(p => p.trim()) : [],
+      permissions: decoded.permissions ? (typeof decoded.permissions === "string" ? decoded.permissions.split(",").map(p => p.trim()) : []) : [],
     };
   }, []);
 
@@ -83,10 +90,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     window.location.href = "/login";
   };
 
-  const isAdmin = user?.role === "Admin";
+  const isSuperAdmin = user?.role === "Super Admin";
+  const isAdmin = isSuperAdmin || user?.role === "Admin";
+
+  const hasPermission = (permission: string): boolean => {
+    if (isSuperAdmin) return true;
+    return user?.permissions.includes(permission) ?? false;
+  };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, isAdmin, login, register, logout }}>
+    <AuthContext.Provider value={{ user, isLoading, isAdmin, isSuperAdmin, hasPermission, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

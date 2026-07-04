@@ -15,7 +15,7 @@ export function TaskCard({ task }: { task: TaskResponse }) {
   const dueDate = task.dueDate ? new Date(task.dueDate).toLocaleDateString() : null;
 
   return (
-    <Link href={`/dashboard/tasks/${task.id}`}>
+    <Link href={`/tasks/${task.id}`}>
       <Card className="hover:bg-accent/50 transition-colors cursor-pointer">
         <CardHeader className="p-3 pb-1">
           <CardTitle className="text-sm font-medium leading-tight">{task.title}</CardTitle>

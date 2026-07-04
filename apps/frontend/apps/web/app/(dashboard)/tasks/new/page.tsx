@@ -7,6 +7,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/componen
 import { Input } from "@workspace/ui/components/input";
 import { Label } from "@workspace/ui/components/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@workspace/ui/components/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@workspace/ui/components/popover";
+import { Calendar } from "@workspace/ui/components/calendar";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
 import { api } from "@/lib/api";
 import type { TaskResponse } from "@/lib/types";
 
@@ -15,7 +19,7 @@ export default function NewTaskPage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("Todo");
-  const [dueDate, setDueDate] = useState("");
+  const [dueDate, setDueDate] = useState<Date | undefined>(undefined);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -28,9 +32,9 @@ export default function NewTaskPage() {
         title,
         description: description || undefined,
         status,
-        dueDate: dueDate || undefined,
+        dueDate: dueDate ? dueDate.toISOString() : undefined,
       });
-      router.push("/dashboard/tasks");
+      router.push("/tasks");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to create task");
     } finally {
@@ -57,7 +61,7 @@ export default function NewTaskPage() {
               <div className="space-y-2">
                 <Label>Status</Label>
                 <Select value={status} onValueChange={(value) => setStatus(value || "Todo")}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Todo">Todo</SelectItem>
                     <SelectItem value="InProgress">In Progress</SelectItem>
@@ -66,8 +70,25 @@ export default function NewTaskPage() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="dueDate">Due Date</Label>
-                <Input id="dueDate" type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
+                <Label>Due Date</Label>
+                <Popover>
+                  <PopoverTrigger className="w-full">
+                    <Button
+                      variant="outline"
+                      className={`w-full justify-start text-left font-normal ${!dueDate ? "text-muted-foreground" : ""}`}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {dueDate ? format(dueDate, "PPP") : "Pick a date"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={dueDate}
+                      onSelect={setDueDate}
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
             </div>
             <div className="flex gap-2 pt-4">

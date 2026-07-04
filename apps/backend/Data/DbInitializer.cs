@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using backend.Models;
+using BCrypt.Net;
 
 namespace backend.Data;
 
@@ -114,7 +115,8 @@ public class DbInitializer
         var roles = new List<(string Name, string Description)>
         {
             ("User", "Standard user who can manage their own tasks"),
-            ("Admin", "Administrator who can manage all tasks and users")
+            ("Admin", "Administrator who can manage all tasks and users"),
+            ("Super Admin", "System super administrator - hidden from UI")
         };
 
         var now = DateTime.UtcNow;
@@ -164,14 +166,17 @@ public class DbInitializer
         var adminRole = await _context.Roles
             .AsTracking()
             .FirstOrDefaultAsync(r => r.Name == "Admin");
+        var superAdminRole = await _context.Roles
+            .AsTracking()
+            .FirstOrDefaultAsync(r => r.Name == "Super Admin");
 
         var allPermissions = await _context.Permissions
             .AsTracking()
             .ToListAsync();
 
-        if (userRole == null || adminRole == null)
+        if (userRole == null || adminRole == null || superAdminRole == null)
         {
-            throw new InvalidOperationException("Required roles (User, Admin) not found. Ensure roles are seeded first.");
+            throw new InvalidOperationException("Required roles (User, Admin, Super Admin) not found. Ensure roles are seeded first.");
         }
 
         var now = DateTime.UtcNow;
@@ -231,6 +236,28 @@ public class DbInitializer
             }
         }
 
+        // Super Admin role permissions (all permissions)
+        foreach (var permission in allPermissions)
+        {
+            var existingAssignment = await _context.RolePermissions
+                .AsTracking()
+                .FirstOrDefaultAsync(rp => rp.RoleId == superAdminRole.Id && rp.PermissionId == permission.Id);
+
+            if (existingAssignment == null)
+            {
+                var rolePermission = new RolePermission
+                {
+                    RoleId = superAdminRole.Id,
+                    PermissionId = permission.Id,
+                    CreatedAt = now,
+                    UpdatedAt = now
+                };
+
+                _context.RolePermissions.Add(rolePermission);
+                addedCount++;
+            }
+        }
+
         if (addedCount > 0)
         {
             await _context.SaveChangesAsync();
@@ -257,24 +284,24 @@ public class DbInitializer
             return;
         }
 
-        var adminRole = await _context.Roles
+        var superAdminRole = await _context.Roles
             .AsTracking()
-            .FirstOrDefaultAsync(r => r.Name == "Admin");
+            .FirstOrDefaultAsync(r => r.Name == "Super Admin");
 
-        if (adminRole == null)
+        if (superAdminRole == null)
         {
-            throw new InvalidOperationException("Admin role not found. Ensure roles are seeded first.");
+            throw new InvalidOperationException("Super Admin role not found. Ensure roles are seeded first.");
         }
 
         var now = DateTime.UtcNow;
 
-        // Create admin user
+        // Create admin user with properly hashed password
         var adminUser = new User
         {
             FirstName = "Admin",
             LastName = "User",
             Email = adminEmail,
-            PasswordHash = "$2a$12$placeholder", // Placeholder hash - actual auth will be implemented later
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin@123"),
             IsActive = true,
             CreatedAt = now,
             UpdatedAt = now
@@ -283,11 +310,11 @@ public class DbInitializer
         _context.Users.Add(adminUser);
         await _context.SaveChangesAsync();
 
-        // Assign Admin role to the user
+        // Assign Super Admin role to the user
         var userRole = new UserRole
         {
             UserId = adminUser.Id,
-            RoleId = adminRole.Id,
+            RoleId = superAdminRole.Id,
             CreatedAt = now,
             UpdatedAt = now
         };
@@ -295,6 +322,6 @@ public class DbInitializer
         _context.UserRoles.Add(userRole);
         await _context.SaveChangesAsync();
 
-        Console.WriteLine("Created default admin user and assigned Admin role.");
+        Console.WriteLine("Created default admin user and assigned Super Admin role.");
     }
 }

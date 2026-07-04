@@ -126,10 +126,15 @@ public class UserService : IUserService
         if (user == null)
             return false;
 
-        // Check if role exists
+        // Check if role exists and prevent assignment of Super Admin role
         var role = await _context.Roles.FirstOrDefaultAsync(r => r.Id == roleId);
         if (role == null)
             return false;
+
+        if (string.Equals(role.Name, "Super Admin", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new InvalidOperationException("Cannot assign 'Super Admin' role - it is a system role.");
+        }
 
         // Remove existing role first (one role per user)
         var existingUserRoles = await _context.UserRoles

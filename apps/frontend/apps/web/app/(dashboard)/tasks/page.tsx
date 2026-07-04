@@ -42,7 +42,7 @@ export default function TasksPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Tasks</h1>
-        <Link href="/dashboard/tasks/new">
+        <Link href="/tasks/new">
           <Button><Plus className="mr-2 h-4 w-4" /> Create Task</Button>
         </Link>
       </div>
@@ -74,7 +74,7 @@ export default function TasksPage() {
           <TableBody>
             {tasks.map((task) => (
               <TableRow key={task.id}>
-                <TableCell><Link href={`/dashboard/tasks/${task.id}`} className="hover:underline font-medium">{task.title}</Link></TableCell>
+                <TableCell><Link href={`/tasks/${task.id}`} className="hover:underline font-medium">{task.title}</Link></TableCell>
                 <TableCell><Badge variant="outline">{task.status}</Badge></TableCell>
                 <TableCell className="text-muted-foreground">{task.ownerName}</TableCell>
                 <TableCell className="text-muted-foreground">{task.dueDate ? new Date(task.dueDate).toLocaleDateString() : "—"}</TableCell>

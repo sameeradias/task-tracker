@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useAuth } from "@/context/auth-context";
 import { Button } from "@workspace/ui/components/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@workspace/ui/components/table";
 import { Badge } from "@workspace/ui/components/badge";
@@ -24,6 +25,7 @@ export default function UsersPage() {
   const [password, setPassword] = useState("");
   const [selectedRoleId, setSelectedRoleId] = useState<string>("");
   const [error, setError] = useState("");
+  const { user: currentUser } = useAuth();
 
   const fetchData = async () => {
     try {
@@ -104,7 +106,11 @@ export default function UsersPage() {
               <div className="space-y-2">
                 <Label>Role</Label>
                 <Select value={selectedRoleId} onValueChange={(value) => setSelectedRoleId(value || "")}>
-                  <SelectTrigger><SelectValue placeholder="Select role" /></SelectTrigger>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select role">
+                      {selectedRoleId ? roles.find(r => String(r.id) === selectedRoleId)?.name || "Select role" : "Select role"}
+                    </SelectValue>
+                  </SelectTrigger>
                   <SelectContent>
                     {roles.map((role) => (<SelectItem key={role.id} value={String(role.id)}>{role.name}</SelectItem>))}
                   </SelectContent>
@@ -132,14 +138,22 @@ export default function UsersPage() {
               <TableCell>{user.email}</TableCell>
               <TableCell>
                 <Select value={roles.find(r => r.name === user.roleName)?.id?.toString() || ""} onValueChange={(v) => handleRoleChange(user.id, v || "")}>
-                  <SelectTrigger className="w-[130px] h-8"><SelectValue placeholder="No role" /></SelectTrigger>
+                  <SelectTrigger className="w-[160px] h-8">
+                    <SelectValue placeholder="No role">
+                      {user.roleName || "No role"}
+                    </SelectValue>
+                  </SelectTrigger>
                   <SelectContent>
                     {roles.map((role) => (<SelectItem key={role.id} value={String(role.id)}>{role.name}</SelectItem>))}
                   </SelectContent>
                 </Select>
               </TableCell>
               <TableCell><Badge variant={user.isActive ? "default" : "secondary"}>{user.isActive ? "Active" : "Inactive"}</Badge></TableCell>
-              <TableCell><Button variant="ghost" size="sm" className="text-destructive" onClick={() => handleDeleteUser(user.id)}>Delete</Button></TableCell>
+              <TableCell>
+                {currentUser?.userId !== user.id && (
+                  <Button variant="ghost" size="sm" className="text-destructive" onClick={() => handleDeleteUser(user.id)}>Delete</Button>
+                )}
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

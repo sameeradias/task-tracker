@@ -7,17 +7,20 @@ import { NavUser } from "@/components/sidebar/nav-user";
 import { useAuth } from "@/context/auth-context";
 
 export function AppSidebar() {
-  const { user, isAdmin } = useAuth();
+  const { user, hasPermission, isSuperAdmin } = useAuth();
 
   const mainNav = [
-    { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-    { title: "Tasks", url: "/dashboard/tasks", icon: CheckSquare },
+    { title: "Dashboard", url: "/", icon: LayoutDashboard },
+    { title: "Tasks", url: "/tasks", icon: CheckSquare },
   ];
 
   const adminNav = [
-    { title: "Users", url: "/dashboard/users", icon: Users },
-    { title: "Roles", url: "/dashboard/roles", icon: Shield },
-    { title: "Permissions", url: "/dashboard/permissions", icon: Lock },
+    ...(isSuperAdmin || hasPermission("VIEW_MODULE:USER") || hasPermission("READ_OTHERS:USER")
+      ? [{ title: "Users", url: "/users", icon: Users }] : []),
+    ...(isSuperAdmin || hasPermission("VIEW_MODULE:ROLE") || hasPermission("READ:ROLE")
+      ? [{ title: "Roles", url: "/roles", icon: Shield }] : []),
+    ...(isSuperAdmin || hasPermission("VIEW_MODULE:PERMISSION") || hasPermission("READ:PERMISSION")
+      ? [{ title: "Permissions", url: "/permissions", icon: Lock }] : []),
   ];
 
   return (
@@ -25,7 +28,7 @@ export function AppSidebar() {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <a href="/dashboard">
+            <a href="/">
               <SidebarMenuButton size="lg">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                   <CheckSquare className="size-4" />
@@ -41,7 +44,7 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={mainNav} label="Navigation" />
-        {isAdmin && <NavMain items={adminNav} label="Administration" />}
+        {adminNav.length > 0 && <NavMain items={adminNav} label="Administration" />}
       </SidebarContent>
       <SidebarFooter>
         <NavUser />

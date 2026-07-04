@@ -16,6 +16,7 @@ public class RoleService : IRoleService
     public async Task<IEnumerable<Role>> GetAllRolesAsync()
     {
         return await _context.Roles
+            .Where(r => r.Name != "Super Admin")
             .Include(r => r.RolePermissions)
                 .ThenInclude(rp => rp.Permission)
             .ToListAsync();
@@ -39,6 +40,11 @@ public class RoleService : IRoleService
 
     public async Task<Role> CreateRoleAsync(string name, string? description)
     {
+        if (string.Equals(name, "Super Admin", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new InvalidOperationException("Cannot create 'Super Admin' role - it is a system role.");
+        }
+
         var role = new Role 
         { 
             Name = name, 
@@ -63,6 +69,16 @@ public class RoleService : IRoleService
         if (role == null)
             return null;
 
+        if (string.Equals(role.Name, "Super Admin", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new InvalidOperationException("Cannot modify 'Super Admin' role - it is a system role.");
+        }
+
+        if (string.Equals(name, "Super Admin", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new InvalidOperationException("Cannot rename role to 'Super Admin' - it is a system role.");
+        }
+
         role.Name = name;
         role.Description = description;
         role.UpdatedAt = DateTime.UtcNow;
@@ -79,6 +95,11 @@ public class RoleService : IRoleService
 
         if (role == null)
             return false;
+
+        if (string.Equals(role.Name, "Super Admin", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new InvalidOperationException("Cannot delete 'Super Admin' role - it is a system role.");
+        }
 
         // Soft delete
         role.IsDeleted = true;
@@ -134,6 +155,13 @@ public class RoleService : IRoleService
 
     public async Task<bool> AssignRoleToUserAsync(int userId, int roleId)
     {
+        // Check if the role being assigned is Super Admin
+        var role = await _context.Roles.FirstOrDefaultAsync(r => r.Id == roleId);
+        if (role != null && string.Equals(role.Name, "Super Admin", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new InvalidOperationException("Cannot assign 'Super Admin' role - it is a system role.");
+        }
+
         // Check if the assignment already exists
         var existingUserRole = await _context.UserRoles
             .FirstOrDefaultAsync(ur => ur.UserId == userId && ur.RoleId == roleId);

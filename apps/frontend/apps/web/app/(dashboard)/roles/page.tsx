@@ -23,17 +23,21 @@ export default function RolesPage() {
   const [roleDescription, setRoleDescription] = useState("");
   const [selectedPermissions, setSelectedPermissions] = useState<number[]>([]);
   const [error, setError] = useState("");
+  const [fetchError, setFetchError] = useState("");
 
   const fetchData = async () => {
+    setFetchError("");
     try {
       const [rolesData, permsData] = await Promise.all([
         api.get<RoleResponse[]>("/roles"),
-        api.get<PermissionResponse[]>("/permissions"),
+        api.get<PermissionResponse[]>("/permissions/my"),
       ]);
       setRoles(rolesData);
       setPermissions(permsData);
     } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to fetch data";
       console.error("Failed to fetch data:", err);
+      setFetchError(message);
     } finally {
       setIsLoading(false);
     }
@@ -98,6 +102,13 @@ export default function RolesPage() {
 
   if (isLoading) return <div className="space-y-3">{[1,2,3].map(i => <Skeleton key={i} className="h-12 w-full" />)}</div>;
 
+  if (fetchError) return (
+    <div className="space-y-4">
+      <h1 className="text-2xl font-bold">Roles</h1>
+      <div className="bg-destructive/10 text-destructive text-sm rounded-md p-4">{fetchError}</div>
+    </div>
+  );
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -136,11 +147,16 @@ export default function RolesPage() {
               </TableCell>
             </TableRow>
           ))}
+          {roles.length === 0 && (
+            <TableRow>
+              <TableCell colSpan={4} className="text-center text-muted-foreground py-8">No roles found</TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
 
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-        <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-h-[80vh] overflow-y-auto" style={{ maxWidth: "40rem" }}>
           <DialogHeader><DialogTitle>Edit Permissions: {editingRole?.name}</DialogTitle></DialogHeader>
           <div className="space-y-4">
             {Object.entries(permissionsByCategory).map(([category, perms]) => (

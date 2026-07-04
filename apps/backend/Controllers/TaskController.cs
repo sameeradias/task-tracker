@@ -29,7 +29,7 @@ public class TaskController : ControllerBase
     public async Task<ActionResult<PaginatedResponseDTO<TaskResponseDTO>>> GetTasks([FromQuery] TaskFilterRequestDTO filter)
     {
         var userId = GetCurrentUserId();
-        var isAdmin = IsCurrentUserAdmin();
+        var isAdmin = CanAccessOthersTasks();
 
         // Regular users can only see their own tasks
         int? ownerFilter = isAdmin ? filter.OwnerId : userId;
@@ -66,7 +66,7 @@ public class TaskController : ControllerBase
         if (task == null)
             return NotFound(new { message = "Task not found." });
 
-        if (!IsCurrentUserAdmin() && task.OwnerId != GetCurrentUserId())
+        if (!CanAccessOthersTasks() && task.OwnerId != GetCurrentUserId())
             return Forbid();
 
         return Ok(MapToDto(task));
@@ -104,7 +104,7 @@ public class TaskController : ControllerBase
             return BadRequest(ModelState);
 
         // Check ownership for regular users
-        if (!IsCurrentUserAdmin())
+        if (!CanAccessOthersTasks())
         {
             var isOwner = await _taskService.IsTaskOwnerAsync(id, GetCurrentUserId());
             if (!isOwner)
@@ -130,7 +130,7 @@ public class TaskController : ControllerBase
     public async Task<ActionResult> DeleteTask(int id)
     {
         // Check ownership for regular users
-        if (!IsCurrentUserAdmin())
+        if (!CanAccessOthersTasks())
         {
             var isOwner = await _taskService.IsTaskOwnerAsync(id, GetCurrentUserId());
             if (!isOwner)
@@ -150,10 +150,23 @@ public class TaskController : ControllerBase
         return int.Parse(userIdClaim ?? "0");
     }
 
-    private bool IsCurrentUserAdmin()
+    private bool CanAccessOthersTasks()
     {
         var roleClaim = User.Claims.FirstOrDefault(c => c.Type == "user_role")?.Value;
-        return string.Equals(roleClaim, "Admin", StringComparison.OrdinalIgnoreCase);
+        if (string.Equals(roleClaim, "Super Admin", StringComparison.OrdinalIgnoreCase))
+            return true;
+        
+        var permissionsClaim = User.Claims.FirstOrDefault(c => c.Type == "permissions")?.Value;
+        if (string.IsNullOrEmpty(permissionsClaim))
+            return false;
+        
+        var userPermissions = permissionsClaim.Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .Select(p => p.Trim())
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        
+        return userPermissions.Contains("READ_OTHERS:TASK") || 
+               userPermissions.Contains("EDIT_OTHERS:TASK") || 
+               userPermissions.Contains("DELETE_OTHERS:TASK");
     }
 
     private static TaskResponseDTO MapToDto(Models.TaskItem task)

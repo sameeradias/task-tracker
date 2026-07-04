@@ -36,6 +36,32 @@ public class PermissionController : ControllerBase
     }
 
     /// <summary>
+    /// Get permissions assigned to the current user (through their role)
+    /// </summary>
+    [HttpGet("my")]
+    public async Task<ActionResult<IEnumerable<PermissionResponseDTO>>> GetMyPermissions()
+    {
+        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "user_id")?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+            return Unauthorized();
+
+        // Super Admin gets all permissions
+        var userRole = User.Claims.FirstOrDefault(c => c.Type == "user_role")?.Value;
+        if (string.Equals(userRole, "Super Admin", StringComparison.OrdinalIgnoreCase))
+        {
+            var allPerms = await _permissionService.GetAllPermissionsAsync();
+            return Ok(allPerms.Select(p => new PermissionResponseDTO(p.Id, p.Name, p.Description, p.Category)));
+        }
+
+        // Regular users get only their role's permissions
+        var permissionNames = await _permissionService.GetUserPermissionsAsync(userId);
+        var allPermissions = await _permissionService.GetAllPermissionsAsync();
+        var userPermissions = allPermissions.Where(p => permissionNames.Contains(p.Name));
+        
+        return Ok(userPermissions.Select(p => new PermissionResponseDTO(p.Id, p.Name, p.Description, p.Category)));
+    }
+
+    /// <summary>
     /// Get permissions by category
     /// </summary>
     [HttpGet("category/{category}")]
