@@ -1,0 +1,68 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: task_tracker_postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-tasktracker}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - task_tracker_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    image: ${BACKEND_IMAGE}
+    container_name: task_tracker_backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "5101:5101"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:5101
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=${POSTGRES_DB:-tasktracker};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD}
+      - Jwt__Secret=${JWT_SECRET}
+      - Jwt__Issuer=${JWT_ISSUER:-TaskTracker}
+      - Jwt__Audience=${JWT_AUDIENCE:-TaskTrackerApp}
+      - Jwt__ExpirationMinutes=${JWT_EXPIRATION:-480}
+    networks:
+      - task_tracker_network
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+
+  frontend:
+    image: ${FRONTEND_IMAGE}
+    container_name: task_tracker_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+    environment:
+      - BACKEND_API_URL=http://backend:5101
+    networks:
+      - task_tracker_network
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+
+volumes:
+  postgres_data:
+
+networks:
+  task_tracker_network:
+    driver: bridge
