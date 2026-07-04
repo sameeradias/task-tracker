@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/sameeradias/Dev/task-tracker/.worktrees/task-tracker-stage8-testing/apps/backend.Tests/backend.Tests.csproj": {}
+    "/Users/sameeradias/Dev/task-tracker/apps/backend.Tests/backend.Tests.csproj": {}
   },
   "projects": {
-    "/Users/sameeradias/Dev/task-tracker/.worktrees/task-tracker-stage8-testing/apps/backend.Tests/backend.Tests.csproj": {
+    "/Users/sameeradias/Dev/task-tracker/apps/backend.Tests/backend.Tests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/sameeradias/Dev/task-tracker/.worktrees/task-tracker-stage8-testing/apps/backend.Tests/backend.Tests.csproj",
+        "projectUniqueName": "/Users/sameeradias/Dev/task-tracker/apps/backend.Tests/backend.Tests.csproj",
         "projectName": "backend.Tests",
-        "projectPath": "/Users/sameeradias/Dev/task-tracker/.worktrees/task-tracker-stage8-testing/apps/backend.Tests/backend.Tests.csproj",
+        "projectPath": "/Users/sameeradias/Dev/task-tracker/apps/backend.Tests/backend.Tests.csproj",
         "packagesPath": "/Users/sameeradias/.nuget/packages/",
-        "outputPath": "/Users/sameeradias/Dev/task-tracker/.worktrees/task-tracker-stage8-testing/apps/backend.Tests/obj/",
+        "outputPath": "/Users/sameeradias/Dev/task-tracker/apps/backend.Tests/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/sameeradias/.nuget/NuGet/NuGet.Config"
@@ -28,8 +28,8 @@
             "framework": "net10.0",
             "targetAlias": "net10.0",
             "projectReferences": {
-              "/Users/sameeradias/Dev/task-tracker/.worktrees/task-tracker-stage8-testing/apps/backend/backend.csproj": {
-                "projectPath": "/Users/sameeradias/Dev/task-tracker/.worktrees/task-tracker-stage8-testing/apps/backend/backend.csproj"
+              "/Users/sameeradias/Dev/task-tracker/apps/backend/backend.csproj": {
+                "projectPath": "/Users/sameeradias/Dev/task-tracker/apps/backend/backend.csproj"
               }
             }
           }
@@ -370,14 +370,14 @@
         }
       }
     },
-    "/Users/sameeradias/Dev/task-tracker/.worktrees/task-tracker-stage8-testing/apps/backend/backend.csproj": {
+    "/Users/sameeradias/Dev/task-tracker/apps/backend/backend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/sameeradias/Dev/task-tracker/.worktrees/task-tracker-stage8-testing/apps/backend/backend.csproj",
+        "projectUniqueName": "/Users/sameeradias/Dev/task-tracker/apps/backend/backend.csproj",
         "projectName": "backend",
-        "projectPath": "/Users/sameeradias/Dev/task-tracker/.worktrees/task-tracker-stage8-testing/apps/backend/backend.csproj",
+        "projectPath": "/Users/sameeradias/Dev/task-tracker/apps/backend/backend.csproj",
         "packagesPath": "/Users/sameeradias/.nuget/packages/",
-        "outputPath": "/Users/sameeradias/Dev/task-tracker/.worktrees/task-tracker-stage8-testing/apps/backend/obj/",
+        "outputPath": "/Users/sameeradias/Dev/task-tracker/apps/backend/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/sameeradias/.nuget/NuGet/NuGet.Config"

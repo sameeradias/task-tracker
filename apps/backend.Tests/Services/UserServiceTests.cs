@@ -69,8 +69,8 @@ public class UserServiceTests
         var service = new UserService(context);
         var users = await service.GetAllUsersAsync();
 
-        users.Should().HaveCount(2); // Both users visible in GetAllUsers - no Super Admin filtering here
-        users.Any(u => u.FirstName == "SA").Should().BeTrue();
+        users.Should().HaveCount(1);
+        users.Any(u => u.FirstName == "SA").Should().BeFalse();
         users.Any(u => u.FirstName == "Normal").Should().BeTrue();
     }
 

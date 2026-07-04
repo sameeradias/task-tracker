@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "7XrB3+0QJu4=",
+  "dgSpecHash": "aR7pfZGtoD8=",
   "success": true,
-  "projectFilePath": "/Users/sameeradias/Dev/task-tracker/.worktrees/task-tracker-stage8-testing/apps/backend.Tests/backend.Tests.csproj",
+  "projectFilePath": "/Users/sameeradias/Dev/task-tracker/apps/backend.Tests/backend.Tests.csproj",
   "expectedPackageFiles": [
     "/Users/sameeradias/.nuget/packages/bcrypt.net-next/4.2.0/bcrypt.net-next.4.2.0.nupkg.sha512",
     "/Users/sameeradias/.nuget/packages/fluentassertions/8.10.0/fluentassertions.8.10.0.nupkg.sha512",
