@@ -12,11 +12,13 @@ namespace backend.Tests.Integration;
 
 public class AuthApiTests : IClassFixture<WebApplicationFactory<Program>>
 {
+    private readonly WebApplicationFactory<Program> _factory;
     private readonly HttpClient _client;
+    private static readonly string DatabaseName = "TestDb_Auth_" + Guid.NewGuid();
 
     public AuthApiTests(WebApplicationFactory<Program> factory)
     {
-        _client = factory.WithWebHostBuilder(builder =>
+        _factory = factory.WithWebHostBuilder(builder =>
         {
             builder.ConfigureServices(services =>
             {
@@ -35,11 +37,12 @@ public class AuthApiTests : IClassFixture<WebApplicationFactory<Program>>
                     d => d.ServiceType == typeof(ApplicationDbContext));
                 if (contextDescriptor != null) services.Remove(contextDescriptor);
 
-                // Add InMemory database
+                // Add InMemory database with static name to persist across requests
                 services.AddDbContext<ApplicationDbContext>(options =>
-                    options.UseInMemoryDatabase("TestDb_" + Guid.NewGuid()));
+                    options.UseInMemoryDatabase(DatabaseName));
             });
-        }).CreateClient();
+        });
+        _client = _factory.CreateClient();
     }
 
     [Fact]
