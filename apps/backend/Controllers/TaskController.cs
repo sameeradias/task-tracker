@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using backend.Attributes;
 using backend.DTOs.Task;
 using backend.DTOs.Common;
+using backend.Hubs;
 using backend.Models.Enums;
 using backend.Services.TaskService;
 
@@ -14,10 +16,12 @@ namespace backend.Controllers;
 public class TaskController : ControllerBase
 {
     private readonly ITaskService _taskService;
+    private readonly IHubContext<TaskHub> _hubContext;
 
-    public TaskController(ITaskService taskService)
+    public TaskController(ITaskService taskService, IHubContext<TaskHub> hubContext)
     {
         _taskService = taskService;
+        _hubContext = hubContext;
     }
 
     /// <summary>
@@ -90,7 +94,9 @@ public class TaskController : ControllerBase
 
         var task = await _taskService.CreateTaskAsync(userId, request.Title, request.Description, status, request.DueDate);
 
-        return CreatedAtAction(nameof(GetTaskById), new { id = task.Id }, MapToDto(task));
+        var responseDto = MapToDto(task);
+        await _hubContext.Clients.All.SendAsync("TaskCreated", responseDto);
+        return CreatedAtAction(nameof(GetTaskById), new { id = task.Id }, responseDto);
     }
 
     /// <summary>
@@ -119,7 +125,9 @@ public class TaskController : ControllerBase
         if (task == null)
             return NotFound(new { message = "Task not found." });
 
-        return Ok(MapToDto(task));
+        var responseDto = MapToDto(task);
+        await _hubContext.Clients.All.SendAsync("TaskUpdated", responseDto);
+        return Ok(responseDto);
     }
 
     /// <summary>
@@ -141,6 +149,7 @@ public class TaskController : ControllerBase
         if (!result)
             return NotFound(new { message = "Task not found." });
 
+        await _hubContext.Clients.All.SendAsync("TaskDeleted", new { id });
         return NoContent();
     }
 
