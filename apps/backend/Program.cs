@@ -90,3 +90,6 @@ app.MapHub<TaskHub>("/hubs/tasks");
 app.MapHealthChecks("/health");
 
 app.Run();
+
+// Make Program accessible for integration tests
+public partial class Program { }
