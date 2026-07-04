@@ -5,6 +5,7 @@ import { api } from "@/lib/api";
 import type { TaskResponse, PaginatedResponse } from "@/lib/types";
 import { TaskColumn } from "./task-column";
 import { Skeleton } from "@workspace/ui/components/skeleton";
+import { useTaskEvents } from "@/hooks/use-task-events";
 
 export function TaskBoard() {
   const [tasks, setTasks] = useState<TaskResponse[]>([]);
@@ -23,6 +24,19 @@ export function TaskBoard() {
     }
     fetchTasks();
   }, []);
+
+  // Real-time updates via SignalR
+  useTaskEvents({
+    onTaskCreated: (task) => {
+      setTasks((prev) => [task, ...prev]);
+    },
+    onTaskUpdated: (task) => {
+      setTasks((prev) => prev.map((t) => (t.id === task.id ? task : t)));
+    },
+    onTaskDeleted: ({ id }) => {
+      setTasks((prev) => prev.filter((t) => t.id !== id));
+    },
+  });
 
   if (isLoading) {
     return (

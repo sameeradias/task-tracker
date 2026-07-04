@@ -8,7 +8,11 @@ const nextConfig: NextConfig = {
         source: "/api/:path*",
         destination: `${process.env.BACKEND_API_URL}/api/:path*`,
       },
-    ]
+      {
+        source: "/hubs/:path*",
+        destination: `${process.env.BACKEND_API_URL}/hubs/:path*`,
+      },
+    ];
   },
 }
 
