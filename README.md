@@ -151,6 +151,52 @@ open http://localhost:3000
 npm run dev
 ```
 
+## User Registration & Access Flow
+
+The system supports self-registration. Here's how access works:
+
+### 1. Self-Registration
+
+Any user can register via the `/register` page or `POST /api/auth/register`:
+- Provide first name, email, and password
+- Account is created immediately
+- A JWT token is returned (auto-login)
+- The user is **not assigned any role** by default
+
+### 2. No Permissions by Default
+
+A newly registered user:
+- Can log in successfully
+- Cannot access any modules (no permissions)
+- Cannot create, view, or manage tasks
+- Must wait for a role to be assigned by an administrator
+
+### 3. Role Assignment (by Super Admin or authorized user)
+
+A user with `ASSIGN:ROLE` permission (e.g., Super Admin) must:
+1. Go to **Users** module in the sidebar
+2. Find the newly registered user
+3. Assign them a role (e.g., "User" or "Admin")
+
+### 4. Permission-Based Access
+
+Once a role is assigned, the user inherits that role's permissions:
+- **User role** (default seeded): Can create/view/edit/delete their own tasks
+- **Admin role** (default seeded): Can manage all tasks and users
+- **Custom roles**: Super Admin can create custom roles with any combination of permissions
+
+### 5. Typical Setup Flow
+
+```
+1. Super Admin logs in (admin@tasktracker.com / Admin@123)
+2. Creates an "Admin" role with all necessary permissions via Roles module
+3. A new user self-registers at /register
+4. Super Admin assigns the appropriate role to the new user via Users module
+5. New user logs in again — now has full access based on their role
+```
+
+> **Note:** The "User" and "Admin" roles are pre-seeded with default permissions. The Super Admin can modify these permissions or create entirely new roles as needed.
+
 ## API Endpoints
 
 | Method | Endpoint | Auth | Description |
